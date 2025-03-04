@@ -26,9 +26,10 @@ def main():
                 return
             
         screen.fill(black) # make the entire screen black
+        player.update(dt)
         player.draw(screen) # render the player/polygon to the screen
         
-        pygame.display.flip()
+        pygame.display.flip() # push the screen to the display
         
         dt = clock.tick(60) / 1000 # limit framerate to 60 fps
 

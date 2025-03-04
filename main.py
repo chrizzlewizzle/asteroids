@@ -8,16 +8,16 @@ from player import *
 def main():
     pygame.init()
 
-    print("Starting Asteroids!")
-    print(f"Screen width: {SCREEN_WIDTH}")
-    print(f"Screen height: {SCREEN_HEIGHT}")
-
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # initialize a screen the size of the SCREEN_WIDTH and SCREEN_HEIGHT in constants
     black = (0, 0, 0) # set the color black to the correct RGB values
 
     clock = pygame.time.Clock()
     dt = 0
 
+    updatable = pygame.sprite.Group() # new group for objects that can be updated
+    drawable = pygame.sprite.Group() # new group for objects that can be drawn
+
+    Player.containers = (updatable, drawable) # both groups are containers for the player
     player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2) # create a new player
 
     while True:
@@ -26,8 +26,11 @@ def main():
                 return
             
         screen.fill(black) # make the entire screen black
-        player.update(dt)
-        player.draw(screen) # render the player/polygon to the screen
+        updatable.update(dt) # update everything in the updatable group
+        
+        for thing in drawable:
+            thing.draw(screen) # render everything in the drawable group to the screen
+        
         
         pygame.display.flip() # push the screen to the display
         

@@ -1,42 +1,46 @@
-# this allows us to use code from
-# the open-source pygame library
-# throughout this file
 import pygame
 from constants import *
-from player import *
+from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
+
 
 def main():
     pygame.init()
-
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # initialize a screen the size of the SCREEN_WIDTH and SCREEN_HEIGHT in constants
-    black = (0, 0, 0) # set the color black to the correct RGB values
-
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
+
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+
+    Asteroid.containers = (asteroids, updatable, drawable)
+    AsteroidField.containers = updatable
+    asteroid_field = AsteroidField()
+
+    Player.containers = (updatable, drawable)
+
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
     dt = 0
-
-    updatable = pygame.sprite.Group() # new group for objects that can be updated
-    drawable = pygame.sprite.Group() # new group for objects that can be drawn
-
-    Player.containers = (updatable, drawable) # both groups are containers for the player
-    player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2) # create a new player
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-            
-        screen.fill(black) # make the entire screen black
-        updatable.update(dt) # update everything in the updatable group
-        
-        for thing in drawable:
-            thing.draw(screen) # render everything in the drawable group to the screen
-        
-        
-        pygame.display.flip() # push the screen to the display
-        
-        dt = clock.tick(60) / 1000 # limit framerate to 60 fps
 
-        
+        updatable.update(dt)
+
+        screen.fill("black")
+
+        for obj in drawable:
+            obj.draw(screen)
+
+        pygame.display.flip()
+
+        # limit the framerate to 60 FPS
+        dt = clock.tick(60) / 1000
+
 
 if __name__ == "__main__":
     main()

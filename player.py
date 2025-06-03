@@ -3,12 +3,15 @@ from circleshape import *
 from shot import Shot
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_SPEED
 
+PLAYER_SHOOT_COOLDOWN = 0
+
 class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
         self.x = x
         self.y = y
+        
 
         
     def triangle(self):
@@ -30,13 +33,21 @@ class Player(CircleShape):
         self.position += forward * PLAYER_SPEED * dt # then multiply vector by playerspeed * dt (larger vector = faster movement) and then add vector to player position
         
     def shoot(self, dt):
+        global PLAYER_SHOOT_COOLDOWN # need a global variable because we will be updating it
+        
         shot_velocity = pygame.Vector2(0, 1) # new forward pointing vector
         shot_velocity =  shot_velocity.rotate(self.rotation) # rotate vector to ship rotation
         shot_velocity = shot_velocity * PLAYER_SHOOT_SPEED # scale vector with PLAYER_SHOOT_SPEED
         
-        Shot(self.position.x, self.position.y, shot_velocity) # self.position is a vector, this way we can forward x and y coordinates to spawn a new Shot
+        if PLAYER_SHOOT_COOLDOWN > 0: # if >0 this means you just shot, so let's not shoot again
+            pass
+        else:
+            Shot(self.position.x, self.position.y, shot_velocity) # self.position is a vector, this way we can forward x and y coordinates to spawn a new Shot
+            PLAYER_SHOOT_COOLDOWN += 0.3 # after successfully shooting, put this to 0.3, which means you can shoot once every 0,3 seconds
 
     def update(self, dt):
+        global PLAYER_SHOOT_COOLDOWN
+        
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
@@ -49,3 +60,6 @@ class Player(CircleShape):
             self.move(dt * -1) # move backward after pressing s, negative dt
         if keys[pygame.K_SPACE]:
             self.shoot(dt)
+            
+        PLAYER_SHOOT_COOLDOWN = max(PLAYER_SHOOT_COOLDOWN - dt, 0) # using max to make sure the floor is 0.
+         

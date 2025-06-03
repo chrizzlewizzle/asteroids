@@ -42,7 +42,7 @@ def main():
             
             for shot in shots: # iterate over all the bullets in the shots group, since collision expects a single object not a group
                 if asteroid.collision(shot):
-                    asteroid.kill()
+                    asteroid.split()
                     shot.kill()
 
         screen.fill("black") # make the background color black
